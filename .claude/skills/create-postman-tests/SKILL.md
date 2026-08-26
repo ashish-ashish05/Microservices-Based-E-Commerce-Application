@@ -2,7 +2,6 @@
 name: create-postman-tests
 description: Generate an import-ready Postman Collection JSON for one microservice by inspecting CLAUDE.md, the service specification, controllers, DTOs, configuration, and relevant existing services.
 argument-hint: "<service-name>"
-disable-model-invocation: true
 ---
 
 # Create Postman Test Collection

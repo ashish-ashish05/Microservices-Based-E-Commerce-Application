@@ -2,7 +2,6 @@
 name: check-service
 description: Audit one microservice against the project's service checklist, report missing work, and implement the incomplete required items. Uses the actual conventions from Product, Category, Inventory, and API Gateway in the repository plus the rules in CLAUDE.md and the service specification.
 argument-hint: "<service-name>"
-disable-model-invocation: true
 ---
 
 # Check and Complete Service

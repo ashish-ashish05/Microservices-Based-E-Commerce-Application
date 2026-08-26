@@ -2,7 +2,6 @@
 name: create-spring-project
 description: Create an empty Spring Boot microservice project from a single service-name argument. Read the root CLAUDE.md to determine the service's responsibilities and required dependencies, reuse the repository's existing Maven/package/class naming conventions, and generate only a clean runnable project skeleton.
 argument-hint: <project-name>
-disable-model-invocation: true
 ---
 
 # Create Spring Boot Project

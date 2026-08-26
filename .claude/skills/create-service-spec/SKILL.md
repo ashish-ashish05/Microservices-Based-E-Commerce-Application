@@ -2,7 +2,6 @@
 name: create-service-spec
 description: Create a durable implementation specification for one planned microservice. The service is supplied as a numbered argument such as "05-role-service". The Skill validates the service against CLAUDE.md, the project build order, existing services, and current architecture, then writes a plan-mode-ready specification to .claude/specs/<argument>.md.
 argument-hint: "<NN-service-name>"
-disable-model-invocation: true
 ---
 
 # Create Service Specification

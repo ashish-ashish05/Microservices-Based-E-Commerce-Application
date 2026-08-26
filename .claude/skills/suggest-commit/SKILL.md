@@ -2,7 +2,6 @@
 name: suggest-commit
 description: Analyze the current Git working tree and staged/unstaged changes, infer the intent of the changes, and suggest a concise Conventional Commit message without modifying files or committing anything.
 argument-hint: "[optional context]"
-disable-model-invocation: true
 ---
 
 # Suggest Commit Message
