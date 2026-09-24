@@ -21,6 +21,13 @@ spring:
           predicates:
             - Path=/inventory/**
 
+jwt:
+  secret: "your-very-long-and-secure-secret-key-that-must-be-at-least-32-characters"
+
+gateway:
+  security:
+    public-routes: "/auth/**,/users/register"
+
 management:
   endpoints:
     web:
