@@ -1,0 +1,314 @@
+{
+  "info": {
+    "name": "Tracking Service API Tests",
+    "description": "API tests for the Tracking Service. Prerequisites: Shipping Service should be running to provide shipment IDs and tracking numbers.",
+    "_postman_id": "d1b2c3a4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8087",
+      "type": "string"
+    },
+    {
+      "key": "trackingNumber",
+      "value": "TRK-123456789",
+      "type": "string"
+    },
+    {
+      "key": "shipmentId",
+      "value": "{{$randomUUID}}",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Setup",
+      "item": [
+        {
+          "name": "Initialize Tracking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"trackingNumber\", json.trackingNumber);",
+                  "pm.collectionVariables.set(\"shipmentId\", json.shipmentId || \"{{$randomUUID}}\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shipmentId\": \"{{shipmentId}}\",\n  \"trackingNumber\": \"{{trackingNumber}}\",\n  \"initialStatus\": \"PICKED_UP\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tracking",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tracking"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Business Operations",
+      "item": [
+        {
+          "name": "Add Tracking Event - In Transit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"IN_TRANSIT\",\n  \"location\": \"Distribution Center A\",\n  \"description\": \"Package has left the sorting facility\",\n  \"timestamp\": \"{{$isoTimestamp}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tracking/{{trackingNumber}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tracking",
+                "{{trackingNumber}}",
+                "events"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Tracking Event - Out for Delivery",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"OUT_FOR_DELIVERY\",\n  \"location\": \"Local Courier Hub\",\n  \"description\": \"Package is with the delivery agent\",\n  \"timestamp\": \"{{$isoTimestamp}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tracking/{{trackingNumber}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tracking",
+                "{{trackingNumber}}",
+                "events"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Tracking Event - Delivered",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"DELIVERED\",\n  \"location\": \"Customer Address\",\n  \"description\": \"Package delivered to front porch\",\n  \"timestamp\": \"{{$isoTimestamp}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tracking/{{trackingNumber}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tracking",
+                "{{trackingNumber}}",
+                "events"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Tracking History",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response contains events\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.events).to.be.an('array');",
+                  "    pm.expect(json.currentStatus).to.equal('DELIVERED');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tracking/{{trackingNumber}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tracking",
+                "{{trackingNumber}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Negative Tests",
+      "item": [
+        {
+          "name": "Get Tracking - Not Found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 404\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tracking/{{$randomAlphanumeric}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tracking",
+                "{{$randomAlphanumeric}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Event - Invalid Transition",
+          "event": "Invalid transition from DELIVERED back to PICKED_UP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"PICKED_UP\",\n  \"location\": \"Unknown\",\n  \"description\": \"Illegal state move\",\n  \"timestamp\": \"{{$isoTimestamp}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tracking/{{trackingNumber}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+                "path": [
+                "api",
+                "tracking",
+                "{{trackingNumber}}",
+                "events"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Returns 400\", function () {",
+                    "pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
